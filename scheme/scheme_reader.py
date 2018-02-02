@@ -149,6 +149,12 @@ def read_tail(src):
         elif src.current() == '.':
             # BEGIN PROBLEM 2
             "*** YOUR CODE HERE ***"
+            src.remove_front()
+            dotted_list = scheme_read(src)
+            if src.remove_front() == ')':
+                return dotted_list
+            raise SyntaxError('dotted_list not end with one item')
+
             # END PROBLEM 2
         else:
             # BEGIN PROBLEM 1
