@@ -73,6 +73,7 @@ class Frame:
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        self.bindings[symbol] = value
         # END PROBLEM 3
 
     def lookup(self, symbol):
@@ -80,6 +81,10 @@ class Frame:
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
         # END PROBLEM 3
+        if symbol in self.bindings:
+            return self.bindings[symbol]
+        elif self.parent is not None:
+            return self.parent.lookup(symbol)
         raise SchemeError('unknown identifier: {0}'.format(symbol))
 
     def make_child_frame(self, formals, vals):
