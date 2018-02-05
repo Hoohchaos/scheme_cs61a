@@ -32,6 +32,14 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 5
         "*** YOUR CODE HERE ***"
+        operator = scheme_eval(first)
+        try:
+            check_procedure(operator)
+        except SchemeError:
+            raise
+        return operator.eval_call()
+        
+
         # END PROBLEM 5
 
 def self_evaluating(expr):
@@ -116,6 +124,7 @@ class Procedure:
         in which the operands are to be evaluated."""
         # BEGIN PROBLEM 5
         "*** YOUR CODE HERE ***"
+
         # END PROBLEM 5
 
 def scheme_procedurep(x):
@@ -150,6 +159,12 @@ class PrimitiveProcedure(Procedure):
             args = args.second
         # BEGIN PROBLEM 4
         "*** YOUR CODE HERE ***"
+        if self.use_env:
+            python_args.append(env)
+        try:
+            return self.fn(*python_args)
+        except TypeError:
+            raise SchemeError("apply raise TypeError")
         # END PROBLEM 4
 
 class UserDefinedProcedure(Procedure):
