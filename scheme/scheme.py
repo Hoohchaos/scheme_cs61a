@@ -32,12 +32,12 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 5
         "*** YOUR CODE HERE ***"
-        operator = scheme_eval(first)
+        operator = scheme_eval(first, env)
         try:
             check_procedure(operator)
         except SchemeError:
             raise
-        return operator.eval_call()
+        return operator.eval_call(rest, env)
         
 
         # END PROBLEM 5
@@ -124,6 +124,8 @@ class Procedure:
         in which the operands are to be evaluated."""
         # BEGIN PROBLEM 5
         "*** YOUR CODE HERE ***"
+        operand = operands.map(lambda op: scheme_eval(op, env))
+        return scheme_apply(self, operand, env)
 
         # END PROBLEM 5
 
