@@ -114,6 +114,11 @@ class Frame:
         child = Frame(self) # Create a new child with self as the parent
         # BEGIN PROBLEM 11
         "*** YOUR CODE HERE ***"
+        if len(formals) != len(vals):
+            raise SchemeError("too many or too few vals are given")
+        while formals != nil:
+            child.define(formals.first, vals.first)
+            formals, vals= formals.second, vals.second 
         # END PROBLEM 11
         return child
 
@@ -199,6 +204,7 @@ class LambdaProcedure(UserDefinedProcedure):
         of values, for a lexically-scoped call evaluated in environment ENV."""
         # BEGIN PROBLEM 12
         "*** YOUR CODE HERE ***"
+        return self.env.make_child_frame(self.formals, args)
         # END PROBLEM 12
 
     def __str__(self):
@@ -251,6 +257,10 @@ def do_define_form(expressions, env):
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 10
         "*** YOUR CODE HERE ***"
+        lambda_form = Pair(target.second, expressions.second)
+        value = do_lambda_form(lambda_form, env)
+        env.define(target.first, value)
+        return target.first
         # END PROBLEM 10
     else:
         bad_target = target.first if isinstance(target, Pair) else target
@@ -292,12 +302,29 @@ def do_and_form(expressions, env):
     """Evaluate a (short-circuited) and form."""
     # BEGIN PROBLEM 13
     "*** YOUR CODE HERE ***"
+    if expressions == nil:
+        return True
+    elif expressions.second == nil:
+        return scheme_eval(expressions.first, env)
+    elif scheme_falsep(scheme_eval(expressions.first, env)):
+        return False
+    else:
+        return do_and_form(expressions.second, env)
+          
     # END PROBLEM 13
 
 def do_or_form(expressions, env):
     """Evaluate a (short-circuited) or form."""
     # BEGIN PROBLEM 13
     "*** YOUR CODE HERE ***"
+    if expressions == nil:
+        return False
+    elif expressions.second == nil:
+        return scheme_eval(expressions.first, env)
+    elif scheme_truep(scheme_eval(expressions.first, env)):
+        return scheme_eval(expressions.first, env)
+    else:
+        return do_or_form(expressions.second, env)
     # END PROBLEM 13
 
 def do_cond_form(expressions, env):
@@ -314,6 +341,9 @@ def do_cond_form(expressions, env):
         if scheme_truep(test):
             # BEGIN PROBLEM 14
             "*** YOUR CODE HERE ***"
+            if clause.second == nil:
+                return test
+            return eval_all(clause.second, env)
             # END PROBLEM 14
         expressions = expressions.second
 
@@ -332,6 +362,15 @@ def make_let_frame(bindings, env):
         raise SchemeError('bad bindings list in let form')
     # BEGIN PROBLEM 15
     "*** YOUR CODE HERE ***"
+    symbols, vals = nil, nil
+    while bindings is not nil:
+        check_form(bindings.first, 2, 2)
+        symbols = Pair(bindings.first.first, symbols)
+        vals = Pair(scheme_eval(bindings.first.second.first, env), vals)
+        bindings = bindings.second
+    check_formals(symbols)
+    return env.make_child_frame(symbols, vals)
+
     # END PROBLEM 15
 
 def do_define_macro(expressions, env):
